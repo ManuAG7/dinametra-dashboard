@@ -74,7 +74,7 @@ Incluye:
 - Caching y deduplicación de requests con React Query
 - Estados de carga y error con reintento
 - Nota: CoinGecko tiene rate-limit (429); se muestra mensaje amigable y botón de reintento
-  <img width="789" height="256" alt="image" src="https://github.com/user-attachments/assets/95216920-0de4-4f80-a124-2610015ed7e9" />
+  <img width="950" height="112" alt="image" src="https://github.com/user-attachments/assets/bbe5041a-1fe1-4eff-8dec-aad9bc54c52f" />
 
 
 ### Accesibilidad (básica)
@@ -85,7 +85,7 @@ Incluye:
 - Tests con Vitest + Testing Library:
   - `KpiCard`
   - `RangeTabs`
-<img width="456" height="192" alt="image" src="https://github.com/user-attachments/assets/5dd9f7ec-bef5-41de-80bf-a69eb3a9b91a" />
+  <img width="789" height="256" alt="image" src="https://github.com/user-attachments/assets/95216920-0de4-4f80-a124-2610015ed7e9" />
 
 ---
 
