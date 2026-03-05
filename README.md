@@ -101,7 +101,6 @@ npm install
 
 ### Levantar en local
   npm run dev
-![Uploading image.png…]()
 
 ### Build producción
   npm run build
