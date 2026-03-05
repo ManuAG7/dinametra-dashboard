@@ -3,6 +3,10 @@
     {
       "source": "/cg/:path*",
       "destination": "https://api.coingecko.com/:path*"
+    },
+    {
+      "source": "/(.*)",
+      "destination": "/index.html"
     }
   ]
 }
