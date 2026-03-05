@@ -57,7 +57,7 @@ export default function DashboardPage() {
             </button>
 
             <div className="min-w-0">
-              <h1 className="text-3xl font-bold tracking-tight sm:text-4xl">
+              <h1 className="text-xl font-bold tracking-tight sm:text-xl">
                 Precios y gráficos de criptomonedas en vivo
               </h1>
               <p className="text-sm text-slate-300 sm:text-base">

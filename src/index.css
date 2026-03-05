@@ -8,6 +8,7 @@ html, body, #root {
 
 body {
   margin: 0;
+  background: #020F2F; /* tu azul */
 }
 
 :root {
@@ -42,10 +43,6 @@ body {
   min-height: 100vh;
 }
 
-h1 {
-  font-size: 3.2em;
-  line-height: 1.1;
-}
 
 button {
   border-radius: 8px;
