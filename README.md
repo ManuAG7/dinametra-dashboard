@@ -15,7 +15,7 @@ Incluye:
 
 
 ## Demo
-- Live: dinametra-dashboard-git-main-manuag7s-projects.vercel.app
+- Live: https://dinametra-dashboard.vercel.app/
 - Repo: https://github.com/ManuAG7/dinametra-dashboard.git
 
 ---
