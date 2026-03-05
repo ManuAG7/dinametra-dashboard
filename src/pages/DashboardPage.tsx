@@ -42,11 +42,10 @@ export default function DashboardPage() {
   const changeTone =
     change24 == null ? "neutral" : change24 >= 0 ? "positive" : "negative";
 
-  // Para que el UI no “parpadee” y sea consistente
+  
   const kpiLoading = coinNow.isLoading || coinNow.isFetching;
 
-  // Cambio de cripto dentro del dashboard:
-  // IMPORTANT: NO uses setCoinId aquí porque el coinId viene de la URL.
+
   const handleCoinChange = (nextCoinId: string) => {
     navigate(`/dashboard/${nextCoinId}`);
   };
@@ -100,7 +99,6 @@ export default function DashboardPage() {
           onVsChange={setVs}
         />
 
-        {/* KPI ERROR (IMPORTANTE: antes se veía como “—” sin explicación) */}
         {coinNow.isError && (
           <div className="mt-4">
             <ErrorState

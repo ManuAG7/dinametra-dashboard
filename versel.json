@@ -1,5 +1,8 @@
 {
   "rewrites": [
-    { "source": "/(.*)", "destination": "/" }
+    {
+      "source": "/cg/(.*)",
+      "destination": "https://api.coingecko.com/$1"
+    }
   ]
 }
