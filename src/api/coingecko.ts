@@ -1,8 +1,17 @@
 import axios from "axios";
 
+const DEMO_KEY = import.meta.env.VITE_CG_DEMO_KEY; 
+
 export const cg = axios.create({
-  baseURL: "/cg/api/v3",
+  baseURL: "https://api.coingecko.com/api/v3",
   timeout: 15000,
+});
+
+cg.interceptors.request.use((config) => {
+  if (DEMO_KEY) {
+    config.params = { ...(config.params ?? {}), x_cg_demo_api_key: DEMO_KEY };
+  }
+  return config;
 });
 
 export type CoinMarketItem = {
