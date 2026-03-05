@@ -13,7 +13,8 @@ export default defineConfig({
         secure: true,
         rewrite: (path) => path.replace(/^\/cg/, ""),
       },
-    },
+    
+  },
   },
 
   test: {
