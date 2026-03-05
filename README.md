@@ -33,7 +33,6 @@ Incluye:
 ---
 
 ## Arquitectura (carpetas)
-<img width="950" height="112" alt="image" src="https://github.com/user-attachments/assets/bbe5041a-1fe1-4eff-8dec-aad9bc54c52f" />
   src/
     api/ # cliente axios + funciones de CoinGecko
     components/
