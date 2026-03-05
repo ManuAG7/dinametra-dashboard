@@ -15,7 +15,7 @@ Incluye:
 
 
 ## Demo
-- Live: _(pendiente)_  
+- Live: dinametra-dashboard-git-main-manuag7s-projects.vercel.app
 - Repo: _(tu link de GitHub)_
 
 ---
