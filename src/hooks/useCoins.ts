@@ -18,20 +18,19 @@ function retryOnceUnless429(failCount: number, err: any) {
   return failCount < 1;
 }
 
-export function useTopCoins(vs: string) {
+export function useTopCoins() {
   return useQuery({
-    queryKey: ["topCoins", vs],
-    queryFn: () => fetchTopCoins(vs),
-    enabled: Boolean(vs),
-
-
-    staleTime: 10 * 60_000, // 10 min
-    gcTime: 30 * 60_000,    // 30 min
-
+    queryKey: ["topCoins"],
+    queryFn: () => fetchTopCoins("usd"),
+    staleTime: 30 * 60_000,
+    gcTime: 60 * 60_000,
     refetchOnWindowFocus: false,
     refetchOnReconnect: false,
-
-    retry: retryOnceUnless429,
+    retry: (failCount, err: any) => {
+      const status = err?.response?.status;
+      if (status === 429) return false;
+      return failCount < 1;
+    },
     placeholderData: (prev) => prev,
   });
 }
@@ -41,11 +40,8 @@ export function useCoinNow(coinId: string, vs: string) {
     queryKey: ["coinNow", coinId, vs],
     queryFn: () => fetchCoinNow(coinId, vs),
     enabled: Boolean(coinId && vs),
-
-
-    staleTime: 60_000,
+    staleTime: 2 * 60_000,
     gcTime: 15 * 60_000,
-
     refetchOnWindowFocus: false,
     refetchOnReconnect: false,
 
@@ -62,10 +58,8 @@ export function useMarketChart(coinId: string, vs: string, days: number) {
     queryFn: () => fetchMarketChart(coinId, vs, days),
     enabled: Boolean(coinId && vs && days),
 
-
-    staleTime: 5 * 60_000, 
-    gcTime: 30 * 60_000,   
-
+    staleTime: 5 * 60_000,
+    gcTime: 30 * 60_000,
     refetchOnWindowFocus: false,
     refetchOnReconnect: false,
 
