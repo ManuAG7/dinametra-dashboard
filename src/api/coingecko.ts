@@ -7,13 +7,6 @@ export const cg = axios.create({
   timeout: 15000,
 });
 
-cg.interceptors.request.use((config) => {
-  if (DEMO_KEY) {
-    config.params = { ...(config.params ?? {}), x_cg_demo_api_key: DEMO_KEY };
-  }
-  return config;
-});
-
 export type CoinMarketItem = {
   id: string;
   symbol: string;

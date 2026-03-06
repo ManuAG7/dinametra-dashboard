@@ -25,7 +25,7 @@ export default function DashboardPage() {
   const [days, setDays] = useState(30);
 
   // Selector (top coins)
-  const topCoins = useTopCoins(vs);
+  const topCoins = useTopCoins();
   const coins = useMemo(() => topCoins.data ?? [], [topCoins.data]);
 
   // Datos actuales (KPIs)
