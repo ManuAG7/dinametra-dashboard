@@ -43,11 +43,11 @@ Incluye:
         states/ # LoadingState, EmptyState, ErrorState
     hooks/ # hooks con React Query (useTopCoins/useCoinNow/useMarketChart)
     pages/ # MarketPage (menú) + DashboardPage
+    services/ # coingecko.service.ts
     assets/ # iconos / imágenes
     utils/ # chart register (chart.js)
     
-<img width="256" height="432" alt="image" src="https://github.com/user-attachments/assets/94d9f859-0dc2-4a94-895a-e09532cc9f5c" />
-
+<img width="262" height="330" alt="image" src="https://github.com/user-attachments/assets/afc6d41c-6c98-462f-a57e-ec1bfcf5115f" />
 
 ## Funcionalidades implementadas
 
