@@ -75,6 +75,8 @@ Incluye:
 - Estados de carga y error con reintento
 - Nota: CoinGecko tiene rate-limit (429); se muestra mensaje amigable y botón de reintento
   <img width="950" height="112" alt="image" src="https://github.com/user-attachments/assets/bbe5041a-1fe1-4eff-8dec-aad9bc54c52f" />
+  <img width="255" height="58" alt="image" src="https://github.com/user-attachments/assets/4f422801-fcd6-41e6-a802-221505725f3a" />
+
 
 
 ### Accesibilidad (básica)
