@@ -18,7 +18,7 @@ export type MarketChartResponse = {
   market_caps: [number, number][];
 };
 
-// Trae un bloque grande de monedas para paginación local
+
 export async function getMarkets(vs: string, perPage = 50) {
   const { data } = await http.get<CoinRow[]>("/coins/markets", {
     params: {
@@ -34,12 +34,10 @@ export async function getMarkets(vs: string, perPage = 50) {
   return data;
 }
 
-// Busca una moneda dentro del arreglo ya descargado
 export function findCoinById(coins: CoinRow[], coinId: string) {
   return coins.find((coin) => coin.id === coinId) ?? null;
 }
 
-// Solo para fallback, por si una moneda no existe en cache
 export async function getCoinById(coinId: string, vs: string) {
   const { data } = await http.get<CoinRow[]>("/coins/markets", {
     params: {
@@ -53,7 +51,6 @@ export async function getCoinById(coinId: string, vs: string) {
   return data[0] ?? null;
 }
 
-// Gráfica de una moneda
 export async function getMarketChart(
   coinId: string,
   vs: string,

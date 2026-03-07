@@ -40,7 +40,7 @@ export default function DashboardPage() {
   const marketsQuery = useQuery({
     queryKey: ["markets", vs],
     queryFn: () => getMarkets(vs, 50),
-    enabled: cachedMarkets.length === 0, // solo si no hay cache
+    enabled: cachedMarkets.length === 0, 
     staleTime: 5 * 60_000,
     gcTime: 15 * 60_000,
     refetchOnWindowFocus: false,

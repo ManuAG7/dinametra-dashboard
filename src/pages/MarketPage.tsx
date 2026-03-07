@@ -23,7 +23,7 @@ export default function MarketPage() {
   const [page, setPage] = useState(1);
 
   const PER_PAGE = 7;
-  const FETCH_SIZE = 50; // cuántas monedas traemos una sola vez
+  const FETCH_SIZE = 50;
 
   useEffect(() => {
     setPage(1);
