@@ -1,20 +1,10 @@
 import { useEffect, useMemo, useState } from "react";
 import { useNavigate } from "react-router-dom";
-import axios from "axios";
-import { useQuery } from "@tanstack/react-query";
+import { useQuery, useQueryClient } from "@tanstack/react-query";
+
 import LoadingState from "../components/states/LoadingState";
 import ErrorState from "../components/states/ErrorState";
-
-type CoinRow = {
-  id: string;
-  name: string;
-  symbol: string;
-  image: string;
-  current_price: number;
-  total_volume: number;
-  market_cap: number;
-  price_change_percentage_24h: number | null;
-};
+import { getMarkets, type CoinRow } from "../services/coingecko.service";
 
 function formatMoney(n: number, currency: string) {
   return new Intl.NumberFormat("en-US", {
@@ -24,55 +14,66 @@ function formatMoney(n: number, currency: string) {
   }).format(n);
 }
 
-async function fetchMarkets(vs: string, page: number, perPage: number) {
-  const res = await axios.get<CoinRow[]>(
-    "https://api.coingecko.com/api/v3/coins/markets",
-    {
-      params: {
-        vs_currency: vs,
-        order: "market_cap_desc",
-        per_page: perPage,
-        page,
-        sparkline: false,
-        price_change_percentage: "24h",
-      },
-    }
-  );
-  return res.data;
-}
-
 export default function MarketPage() {
   const navigate = useNavigate();
+  const queryClient = useQueryClient();
 
   const [vs, setVs] = useState<"usd" | "mxn" | "eur">("usd");
   const [search, setSearch] = useState("");
   const [page, setPage] = useState(1);
 
   const PER_PAGE = 7;
+  const FETCH_SIZE = 50; // cuántas monedas traemos una sola vez
 
   useEffect(() => {
     setPage(1);
-  }, [vs]);
+  }, [vs, search]);
 
   const q = useQuery({
-    queryKey: ["markets", vs, page, PER_PAGE],
-    queryFn: () => fetchMarkets(vs, page, PER_PAGE),
-    staleTime: 60_000,
+    queryKey: ["markets", vs],
+    queryFn: () => getMarkets(vs, FETCH_SIZE),
+    staleTime: 5 * 60_000,
+    gcTime: 15 * 60_000,
     refetchOnWindowFocus: false,
-    retry: 1,
-    placeholderData: (prev) => prev, 
+    refetchOnReconnect: false,
+    retry: (failCount, err: any) => {
+      const status = err?.response?.status;
+      if (status === 429) return false;
+      return failCount < 1;
+    },
+    placeholderData: (prev) => prev,
   });
+
+  const coins = q.data ?? [];
 
   const filtered = useMemo(() => {
     const s = search.trim().toLowerCase();
-    if (!s) return q.data ?? [];
-    return (q.data ?? []).filter((c) => {
+    if (!s) return coins;
+
+    return coins.filter((c) => {
       return (
         c.name.toLowerCase().includes(s) ||
         c.symbol.toLowerCase().includes(s)
       );
     });
-  }, [q.data, search]);
+  }, [coins, search]);
+
+  const totalPages = Math.max(1, Math.ceil(filtered.length / PER_PAGE));
+
+  const paginated = useMemo(() => {
+    const start = (page - 1) * PER_PAGE;
+    const end = start + PER_PAGE;
+    return filtered.slice(start, end);
+  }, [filtered, page]);
+
+  const handleOpenDashboard = (coin: CoinRow) => {
+    // guardamos la moneda seleccionada en cache para reutilizarla en dashboard
+    queryClient.setQueryData(["selectedCoin", coin.id, vs], coin);
+
+    navigate(`/dashboard/${coin.id}`, {
+      state: { vs },
+    });
+  };
 
   return (
     <div className="mx-auto w-full max-w-6xl px-4 py-6">
@@ -84,7 +85,6 @@ export default function MarketPage() {
       {/* Top bar */}
       <div className="mt-5 flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
         <div className="flex w-full items-center gap-2 rounded-xl bg-slate-900/60 px-3 py-2 ring-1 ring-slate-800 sm:max-w-md">
-          
           <input
             value={search}
             onChange={(e) => setSearch(e.target.value)}
@@ -96,7 +96,7 @@ export default function MarketPage() {
         <div className="flex items-center gap-2">
           <select
             value={vs}
-            onChange={(e) => setVs(e.target.value as any)}
+            onChange={(e) => setVs(e.target.value as "usd" | "mxn" | "eur")}
             className="rounded-full bg-slate-900/60 px-4 py-2 text-sm font-semibold text-slate-100 ring-1 ring-slate-800 outline-none"
           >
             <option value="usd">USD</option>
@@ -113,7 +113,7 @@ export default function MarketPage() {
         {q.isError && (
           <ErrorState
             code={(q.error as any)?.response?.status}
-            text="No se pudo cargar el mercado.  Espera unos segundos antes de reintentar (CoinGecko aplica límite)."
+            text="No se pudo cargar el mercado. Espera unos segundos antes de reintentar (CoinGecko aplica límite)."
             onRetry={() => q.refetch()}
           />
         )}
@@ -137,14 +137,14 @@ export default function MarketPage() {
                 </thead>
 
                 <tbody>
-                  {filtered.map((c) => {
+                  {paginated.map((c) => {
                     const change = c.price_change_percentage_24h ?? 0;
                     const up = change >= 0;
 
                     return (
                       <tr
                         key={c.id}
-                        onClick={() => navigate(`/dashboard/${c.id}`)}
+                        onClick={() => handleOpenDashboard(c)}
                         className="cursor-pointer border-t border-slate-800 text-sm text-slate-100 hover:bg-slate-900/60"
                       >
                         <td className="px-4 py-4">
@@ -180,7 +180,7 @@ export default function MarketPage() {
                               up ? "text-emerald-400" : "text-rose-400",
                             ].join(" ")}
                           >
-                            {up ? " " : " "} {Math.abs(change).toFixed(2)}%
+                            {Math.abs(change).toFixed(2)}%
                           </span>
                         </td>
 
@@ -197,7 +197,7 @@ export default function MarketPage() {
                     );
                   })}
 
-                  {filtered.length === 0 && (
+                  {paginated.length === 0 && (
                     <tr>
                       <td
                         colSpan={6}
@@ -212,30 +212,26 @@ export default function MarketPage() {
             </div>
           </div>
 
-          {/* Pagination */}
+          {/* Pagination local */}
           <div className="mt-4 flex items-center justify-between gap-3">
             <button
               type="button"
               onClick={() => setPage((p) => Math.max(1, p - 1))}
-              disabled={page === 1 || q.isFetching}
+              disabled={page === 1}
               className="rounded-lg bg-slate-900/60 px-3 py-2 text-sm font-semibold text-white ring-1 ring-slate-800 disabled:opacity-50"
             >
               ← Anterior
             </button>
 
             <div className="text-sm text-slate-300">
-              Página <span className="font-semibold text-white">{page}</span>
-              {q.isFetching && (
-                <span className="ml-2 text-xs text-slate-400">
-                  Actualizando…
-                </span>
-              )}
+              Página <span className="font-semibold text-white">{page}</span> de{" "}
+              <span className="font-semibold text-white">{totalPages}</span>
             </div>
 
             <button
               type="button"
-              onClick={() => setPage((p) => p + 1)}
-              disabled={(q.data?.length ?? 0) < PER_PAGE || q.isFetching}
+              onClick={() => setPage((p) => Math.min(totalPages, p + 1))}
+              disabled={page >= totalPages}
               className="rounded-lg bg-slate-900/60 px-3 py-2 text-sm font-semibold text-white ring-1 ring-slate-800 disabled:opacity-50"
             >
               Siguiente →

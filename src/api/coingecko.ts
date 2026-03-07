@@ -1,7 +1,5 @@
 import axios from "axios";
 
-const DEMO_KEY = import.meta.env.VITE_CG_DEMO_KEY; 
-
 export const cg = axios.create({
   baseURL: "https://api.coingecko.com/api/v3",
   timeout: 15000,
