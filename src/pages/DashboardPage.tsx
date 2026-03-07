@@ -1,9 +1,8 @@
-// src/pages/DashboardPage.tsx
 import { useMemo, useState } from "react";
-import { useNavigate, useParams } from "react-router-dom";
+import { useLocation, useNavigate, useParams } from "react-router-dom";
+import { useQuery, useQueryClient } from "@tanstack/react-query";
 
 import backIcon from "../assets/casa.png";
-import { useCoinNow, useMarketChart, useTopCoins } from "../hooks/useCoins";
 import "../utils/chart";
 
 import RangeTabs from "../components/filters/RangeTabs";
@@ -15,44 +14,99 @@ import EmptyState from "../components/states/EmptyState";
 import PriceLineChart from "../components/charts/PriceLineChart";
 import VolumeBarChart from "../components/charts/VolumeBarChart";
 
+import {
+  findCoinById,
+  getCoinById,
+  getMarketChart,
+  getMarkets,
+  type CoinRow,
+} from "../services/coingecko.service";
+
 export default function DashboardPage() {
   const navigate = useNavigate();
+  const location = useLocation();
+  const queryClient = useQueryClient();
 
   const { coinId: coinIdParam } = useParams();
   const coinId = coinIdParam ?? "bitcoin";
 
-  const [vs, setVs] = useState("usd");
+  const [vs, setVs] = useState<"usd" | "mxn" | "eur">(
+    location.state?.vs ?? "usd",
+  );
   const [days, setDays] = useState(30);
+  const cachedMarkets =
+    queryClient.getQueryData<CoinRow[]>(["markets", vs]) ?? [];
 
-  // Selector (top coins)
-  const topCoins = useTopCoins();
-  const coins = useMemo(() => topCoins.data ?? [], [topCoins.data]);
+  const marketsQuery = useQuery({
+    queryKey: ["markets", vs],
+    queryFn: () => getMarkets(vs, 50),
+    enabled: cachedMarkets.length === 0, // solo si no hay cache
+    staleTime: 5 * 60_000,
+    gcTime: 15 * 60_000,
+    refetchOnWindowFocus: false,
+    refetchOnReconnect: false,
+    retry: (failCount, err: any) => {
+      const status = err?.response?.status;
+      if (status === 429) return false;
+      return failCount < 1;
+    },
+    placeholderData: (prev) => prev,
+  });
 
-  // Datos actuales (KPIs)
-  const coinNow = useCoinNow(coinId, vs);
+  const marketsData = cachedMarkets.length > 0 ? cachedMarkets : (marketsQuery.data ?? []);
 
-  // Series para gráficas
-  const chart = useMarketChart(coinId, vs, days);
+  const selectedCoinFromCache =
+    queryClient.getQueryData<CoinRow>(["selectedCoin", coinId, vs]) ??
+    findCoinById(marketsData, coinId);
 
-  // Cambio 24h: algunos endpoints lo dan como price_change_percentage_24h_in_currency
+  const coinFallback = useQuery({
+    queryKey: ["coinByIdFallback", coinId, vs],
+    queryFn: () => getCoinById(coinId, vs),
+    enabled: !selectedCoinFromCache && !!coinId,
+    staleTime: 5 * 60_000,
+    gcTime: 15 * 60_000,
+    refetchOnWindowFocus: false,
+    refetchOnReconnect: false,
+    retry: (failCount, err: any) => {
+      const status = err?.response?.status;
+      if (status === 429) return false;
+      return failCount < 1;
+    },
+    placeholderData: (prev) => prev,
+  });
+
+  const coinData = selectedCoinFromCache ?? coinFallback.data ?? null;
+
+  const chart = useQuery({
+    queryKey: ["marketChart", coinId, vs, days],
+    queryFn: () => getMarketChart(coinId, vs, days),
+    enabled: !!coinId,
+    staleTime: 5 * 60_000,
+    gcTime: 30 * 60_000,
+    refetchOnWindowFocus: false,
+    refetchOnReconnect: false,
+    retry: (failCount, err: any) => {
+      const status = err?.response?.status;
+      if (status === 429) return false;
+      return failCount < 1;
+    },
+    placeholderData: (prev) => prev,
+  });
+
   const change24 =
-    coinNow.data?.price_change_percentage_24h_in_currency ??
-    coinNow.data?.price_change_percentage_24h;
+    coinData?.price_change_percentage_24h_in_currency ??
+    coinData?.price_change_percentage_24h;
 
   const changeTone =
     change24 == null ? "neutral" : change24 >= 0 ? "positive" : "negative";
 
-  
-  const kpiLoading = coinNow.isLoading || coinNow.isFetching;
-
-
-  const handleCoinChange = (nextCoinId: string) => {
-    navigate(`/dashboard/${nextCoinId}`);
-  };
+  const kpiLoading =
+    (!selectedCoinFromCache && coinFallback.isLoading) ||
+    (!coinData && coinFallback.isFetching);
 
   const kpiErrorCode =
-    (coinNow.error as any)?.response?.status ??
-    (coinNow.error as any)?.status ??
+    (coinFallback.error as any)?.response?.status ??
+    (coinFallback.error as any)?.status ??
     undefined;
 
   const chartErrorCode =
@@ -60,10 +114,30 @@ export default function DashboardPage() {
     (chart.error as any)?.status ??
     undefined;
 
+  const coinOptions = useMemo(() => {
+    return marketsData.map((coin) => ({
+      id: coin.id,
+      name: coin.name,
+      symbol: coin.symbol,
+      image: coin.image,
+    }));
+  }, [marketsData]);
+
+  const handleCoinChange = (nextCoinId: string) => {
+    navigate(`/dashboard/${nextCoinId}`, {
+      state: { vs },
+    });
+  };
+
+  const handleVsChange = (currency: string) => {
+    if (currency === "usd" || currency === "mxn" || currency === "eur") {
+      setVs(currency);
+    }
+  };
+
   return (
     <div className="min-h-screen w-full bg-[#020F2F] text-white">
       <div className="mx-auto w-full max-w-7xl px-4 py-5 sm:px-6 sm:py-8 lg:px-8">
-        {/* HEADER */}
         <header className="mb-6 flex flex-col gap-3">
           <div className="flex items-start gap-3">
             <button
@@ -90,30 +164,28 @@ export default function DashboardPage() {
           </div>
         </header>
 
-        {/* FILTERS */}
         <FiltersBar
           coinId={coinId}
           vs={vs}
-          coins={coins}
+          coins={coinOptions}
           onCoinChange={handleCoinChange}
-          onVsChange={setVs}
+          onVsChange={handleVsChange}
         />
 
-        {coinNow.isError && (
+        {!selectedCoinFromCache && coinFallback.isError && (
           <div className="mt-4">
             <ErrorState
               code={kpiErrorCode}
-              text="Error cargando datos de KPIs. Espera unos segundos y reintenta (CoinGecko puede limitar peticiones)."
-              onRetry={() => coinNow.refetch()}
+              text="Error cargando datos de KPIs. Espera unos segundos y reintenta."
+              onRetry={() => coinFallback.refetch()}
             />
           </div>
         )}
 
-        {/* KPIs */}
         <div className="mt-6 grid grid-cols-1 gap-4 sm:grid-cols-2 md:grid-cols-4">
           <KpiCard
             title="Precio"
-            value={coinNow.data?.current_price}
+            value={coinData?.current_price}
             suffix={` ${vs.toUpperCase()}`}
             loading={kpiLoading}
           />
@@ -126,38 +198,33 @@ export default function DashboardPage() {
           />
           <KpiCard
             title="Market Cap"
-            value={coinNow.data?.market_cap}
+            value={coinData?.market_cap}
             suffix={` ${vs.toUpperCase()}`}
             loading={kpiLoading}
           />
           <KpiCard
             title="Volumen 24h"
-            value={coinNow.data?.total_volume}
+            value={coinData?.total_volume}
             suffix={` ${vs.toUpperCase()}`}
             loading={kpiLoading}
           />
         </div>
 
-        {/* CHARTS */}
         <div className="mt-6">
-          {/* Loading */}
           {chart.isLoading && <LoadingState text="Cargando gráficas..." />}
 
-          {/* Error */}
           {chart.isError && (
             <ErrorState
               code={chartErrorCode}
-              text="Error cargando datos para gráficas. Espera unos segundos antes de reintentar (CoinGecko aplica límite)."
+              text="Error cargando datos para gráficas. Espera unos segundos antes de reintentar."
               onRetry={() => chart.refetch()}
             />
           )}
 
-          {/* Empty */}
           {chart.data && chart.data.prices.length === 0 && (
             <EmptyState text="No hay datos en este rango." />
           )}
 
-          {/* OK */}
           {chart.data && chart.data.prices.length > 0 && (
             <>
               <RangeTabs value={days} onChange={setDays} />
