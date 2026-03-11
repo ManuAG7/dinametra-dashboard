@@ -1,6 +1,6 @@
 import { useQuery } from "@tanstack/react-query";
-import { fetchMarketChart, type MarketChartResponse,
-} from "../api/coingecko";
+import { getMarketChart, type MarketChartResponse,
+} from "../services/coingecko.service";
 
 
 function is429(err: any) {
@@ -16,7 +16,7 @@ function retryOnceUnless429(failCount: number, err: any) {
 export function useMarketChart(coinId: string, vs: string, days: number) {
   return useQuery<MarketChartResponse>({
     queryKey: ["marketChart", coinId, vs, days],
-    queryFn: () => fetchMarketChart(coinId, vs, days),
+    queryFn: () => getMarketChart(coinId, vs, days),
     enabled: Boolean(coinId && vs && days),
 
     staleTime: 5 * 60_000,
