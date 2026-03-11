@@ -1,6 +1,6 @@
 import { useEffect, useState } from "react";
 import { Line } from "react-chartjs-2";
-import type { MarketChartResponse } from "../../api/coingecko";
+import type { MarketChartResponse } from "../../services/coingecko.service";
 
 type Props = {
   data: MarketChartResponse;
