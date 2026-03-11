@@ -34,7 +34,6 @@ Incluye:
 
 ## Arquitectura (carpetas)
   src/
-    api/ # cliente axios + funciones de CoinGecko
     components/
         cards/ # KPI cards
         charts/ # Line/Bar charts
@@ -43,11 +42,12 @@ Incluye:
         states/ # LoadingState, EmptyState, ErrorState
     hooks/ # hooks con React Query (useTopCoins/useCoinNow/useMarketChart)
     pages/ # MarketPage (menú) + DashboardPage
-    services/ # coingecko.service.ts
+    services/ # coingecko.service.ts, cliente axios + funciones de CoinGecko
     assets/ # iconos / imágenes
     utils/ # chart register (chart.js)
     
-<img width="262" height="330" alt="image" src="https://github.com/user-attachments/assets/afc6d41c-6c98-462f-a57e-ec1bfcf5115f" />
+<img width="276" height="293" alt="image" src="https://github.com/user-attachments/assets/7c72befc-c661-434c-bfef-e33f052d6921" />
+
 
 ## Funcionalidades implementadas
 
