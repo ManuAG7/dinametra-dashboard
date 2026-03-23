@@ -179,9 +179,21 @@ const Pillars = () => {
 
     return (
         <section
-            className="w-full py-20 overflow-hidden"
+            className="w-full py-20 overflow-hidden relative"
             style={{ backgroundColor: "#0F172A" }}
         >
+            <div
+                className="absolute pointer-events-none"
+                style={{
+                    width: 330,
+                    height: 850,
+                    backgroundColor: "#FF4D0033",
+                    filter: "blur(100px)",
+                    top: "50%",
+                    right: -100,
+                    transform: "translateY(-50%)",
+                }}
+            />
             <div
                 ref={ref}
                 className="max-w-[1400px] mx-auto px-6 sm:px-10 lg:px-16"
