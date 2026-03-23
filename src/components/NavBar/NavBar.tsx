@@ -5,11 +5,15 @@ const Navbar = () => {
     const [activeLink, setActiveLink] = useState("Inicio");
     const [searchQuery, setSearchQuery] = useState("");
 
-    const links = ["Inicio", "Categorías", "Más vendidos", "Contacto"];
+    const links = [
+        { label: "Inicio", id: "inicio" },
+        { label: "Categorías", id: "categorias" },
+        { label: "Más vendidos", id: "mas-vendidos" },
+        { label: "Contacto", id: "contacto" },
+    ];
 
     return (
-        <nav className="w-full sticky top-0 z-50 shadow-sm" style={{ backgroundColor: '#ffffff' }}>
-            {/* Barra de búsqueda expandible */}
+        <nav className="w-full shadow-sm" style={{ backgroundColor: '#ffffff' }}>
             <div
                 className={`overflow-hidden transition-all duration-300 ease-in-out ${searchOpen ? "max-h-16 opacity-100" : "max-h-0 opacity-0"
                     }`}
@@ -54,38 +58,32 @@ const Navbar = () => {
                     </span>
                 </div>
 
-                {/* Links — desktop */}
                 <ul className="hidden md:flex items-center gap-8 flex-1 justify-start pl-10">
                     {links.map((link) => (
-                        <li key={link}>
+                        <li key={link.label}>
                             <button
-                                onClick={() => setActiveLink(link)}
+                                onClick={() => {
+                                    setActiveLink(link.label);
+                                    const el = document.getElementById(link.id);
+                                    if (el) el.scrollIntoView({ behavior: "smooth" });
+                                }}
                                 className="text-sm font-medium transition-colors duration-200 relative group"
                                 style={{
                                     backgroundColor: 'transparent',
                                     border: 'none',
                                     outline: 'none',
                                     padding: '0',
-                                    color: activeLink === link ? '' : '#475569',
+                                    color: activeLink === link.label ? '#FF4D00' : '#475569',
                                     cursor: 'pointer',
                                 }}
                             >
-                                {link}
-                                {/* Underline animado */}
-                                <span
-                                    className="absolute -bottom-1 left-0 h-0.5 transition-all duration-300"
-                                    style={{
-                                        width: activeLink === link ? '100%' : '0%',
-                                    }}
-                                />
+                                {link.label}
                             </button>
                         </li>
                     ))}
                 </ul>
 
-                {/* Iconos derecha */}
                 <div className="flex items-center gap-3 flex-shrink-0">
-                    {/* Búsqueda */}
                     <button
                         onClick={() => setSearchOpen(!searchOpen)}
                         className="rounded-full transition-colors duration-200"

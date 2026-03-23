@@ -11,7 +11,6 @@ const NewsletterBanner = () => {
         <section className="w-full py-10" style={{ backgroundColor: "#F6F8F6" }}>
             <div className="max-w-[1400px] mx-auto px-6 sm:px-10 lg:px-16 flex justify-center">
 
-                {/* Contenedor principal 1120x366 */}
                 <motion.div
                     ref={ref}
                     initial={{ opacity: 0, y: 32 }}
@@ -24,7 +23,6 @@ const NewsletterBanner = () => {
                         backgroundColor: "#0F172A",
                     }}
                 >
-                    {/* ── Mancha derecha ── */}
                     <div
                         className="absolute pointer-events-none"
                         style={{
@@ -39,9 +37,8 @@ const NewsletterBanner = () => {
                         }}
                     />
 
-                    {/* ── Columna izquierda: textos ── */}
                     <div className="flex flex-col gap-2 z-10 flex-1">
-                        {/* Label superior */}
+
                         <span
                             className="text-xs font-bold uppercase tracking-widest"
                             style={{ color: "#FF4D00" }}
@@ -49,7 +46,6 @@ const NewsletterBanner = () => {
                             Exclusivo para miembros
                         </span>
 
-                        {/* Título */}
                         <h2
                             className="font-extrabold text-white m-0 leading-tight"
                             style={{ fontSize: "clamp(1.6rem, 3vw, 2.4rem)" }}
@@ -57,7 +53,6 @@ const NewsletterBanner = () => {
                             Únete al club y ahorra
                         </h2>
 
-                        {/* % gigante */}
                         <p
                             className="font-extrabold m-0 leading-none"
                             style={{
@@ -69,7 +64,6 @@ const NewsletterBanner = () => {
                             el %15
                         </p>
 
-                        {/* Subtexto */}
                         <p
                             className="text-sm leading-relaxed m-0 max-w-[380px]"
                             style={{ color: "#94a3b8" }}
@@ -78,10 +72,8 @@ const NewsletterBanner = () => {
                             y consejos restaurativos exclusivos.
                         </p>
                     </div>
-                    {/* ── Columna derecha: input + botón ── */}
                     <div className="flex flex-row items-center justify-center z-10 flex-shrink-0 gap-3">
 
-                        {/* Input */}
                         <div
                             className="flex items-center"
                             style={{
@@ -102,8 +94,6 @@ const NewsletterBanner = () => {
                                 style={{ color: "#fff", caretColor: "#FF4D00", fontSize: 14 }}
                             />
                         </div>
-
-                        {/* Botón separado */}
                         <button
                             onMouseEnter={() => setBtnHover(true)}
                             onMouseLeave={() => setBtnHover(false)}
