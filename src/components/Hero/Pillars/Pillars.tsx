@@ -1,7 +1,6 @@
 import { useRef } from "react";
 import { motion, useInView, type Variants } from "framer-motion";
 
-// ── Tipos ──────────────────────────────────────────────
 interface PillarCard {
     id: number;
     icon: React.ReactNode;
@@ -9,9 +8,6 @@ interface PillarCard {
     description: string;
     cta: string;
 }
-
-// ── Iconos SVG placeholder ─────────────────────────────
-// Reemplaza el <path> de cada uno con el SVG real que corresponda
 
 const IconDiscipline = () => (
     <svg width="24" height="14" viewBox="0 0 24 14" fill="none" xmlns="http://www.w3.org/2000/svg">
@@ -49,7 +45,6 @@ const ArrowRight = () => (
     </svg>
 );
 
-// ── Datos ──────────────────────────────────────────────
 const PILLARS: PillarCard[] = [
     {
         id: 1,
@@ -85,7 +80,6 @@ const PILLARS: PillarCard[] = [
     },
 ];
 
-// ── Variantes de animación ─────────────────────────────
 const containerVariants: Variants = {
     hidden: {},
     visible: {
@@ -111,7 +105,6 @@ const headerVariants: Variants = {
     },
 };
 
-// ── Card individual ────────────────────────────────────
 const PillarCardItem = ({ card }: { card: PillarCard }) => (
     <motion.div
         variants={cardVariants}
@@ -123,7 +116,6 @@ const PillarCardItem = ({ card }: { card: PillarCard }) => (
         }}
         whileHover={{ backgroundColor: "rgba(255,255,255,0.06)", transition: { duration: 0.25 } }}
     >
-        {/* Icono */}
         <div
             className="flex items-center justify-center flex-shrink-0"
             style={{
@@ -136,14 +128,12 @@ const PillarCardItem = ({ card }: { card: PillarCard }) => (
             {card.icon}
         </div>
 
-        {/* Título */}
         <h3
             className="text-white font-bold text-xl leading-snug m-0 whitespace-pre-line"
         >
             {card.title}
         </h3>
 
-        {/* Descripción */}
         <p className="text-sm leading-relaxed m-0" style={{ color: "#94a3b8" }}>
             {card.description}
         </p>
@@ -172,7 +162,6 @@ const PillarCardItem = ({ card }: { card: PillarCard }) => (
     </motion.div>
 );
 
-// ── Componente principal ───────────────────────────────
 const Pillars = () => {
     const ref = useRef<HTMLDivElement>(null);
     const inView = useInView(ref, { once: true, margin: "-100px" });
@@ -198,7 +187,6 @@ const Pillars = () => {
                 ref={ref}
                 className="max-w-[1400px] mx-auto px-6 sm:px-10 lg:px-16"
             >
-                {/* Header */}
                 <motion.div
                     className="text-center mb-14"
                     initial="hidden"
@@ -216,8 +204,6 @@ const Pillars = () => {
                         rendimiento y la transformación visible.
                     </p>
                 </motion.div>
-
-                {/* Grid de cards */}
                 <motion.div
                     className="grid grid-cols-4 gap-6"
                     initial="hidden"

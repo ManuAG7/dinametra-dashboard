@@ -19,7 +19,7 @@ const useFadeInOnScroll = () => {
 
     return { ref, visible };
 };
-// ── Tipos ──────────────────────────────────────────────
+
 interface LifestyleCard {
     id: number;
     image: string;
@@ -134,7 +134,6 @@ const LifestyleCardItem = ({ card }: { card: LifestyleCard }) => (
                     className="w-full h-full object-cover"
                 />
             ) : (
-                // Placeholder SVG imagen — reemplaza con <img src={...} />
                 <div className="w-full h-full flex items-center justify-center">
                     <svg width="48" height="48" viewBox="0 0 48 48" fill="none" opacity="0.3">
                         <rect width="48" height="48" rx="8" fill="white" />
@@ -148,7 +147,6 @@ const LifestyleCardItem = ({ card }: { card: LifestyleCard }) => (
             )}
         </div>
 
-        {/* Contenido texto */}
         <div className="flex flex-col gap-3 p-6 flex-1">
             <h3 className="text-lg font-bold text-gray-900 m-0 leading-snug">
                 {card.title}
@@ -173,16 +171,13 @@ const LifestyleCardItem = ({ card }: { card: LifestyleCard }) => (
     </div>
 );
 
-// ── Componente principal ───────────────────────────────
 const Lifestyle = () => {
     const [current, setCurrent] = useState(0);
 
     const CARD_WIDTH = 405;
     const GAP = 24;
     const STEP = CARD_WIDTH + GAP;
-    // Viewport: 2 cards completas + ~60px hint de la 3ra
     const VIEWPORT = CARD_WIDTH * 2 + GAP;
-    // Max index: no pasar de la penúltima para que siempre haya hint
     const maxIndex = CARDS.length - 2;
 
     const prev = () => setCurrent((c) => Math.max(c - 1, 0));
@@ -190,11 +185,11 @@ const Lifestyle = () => {
 
     const { ref, visible } = useFadeInOnScroll();
 
-    // Estilos compartidos para botones nav
+
     const navBtnStyle: React.CSSProperties = {
         width: 33.66,
         height: 45,
-        borderRadius: 50,          // rounded-lg, no pill
+        borderRadius: 50,
         flexShrink: 0,
         display: "flex",
         alignItems: "center",
@@ -218,7 +213,6 @@ const Lifestyle = () => {
         >
             <div className="max-w-[1400px] mx-auto px-6 sm:px-10 lg:px-16">
 
-                {/* Header */}
                 <div className="text-center mb-10">
                     <h2 className="text-3xl sm:text-4xl lg:text-5xl font-extrabold  m-0 leading-tight" style={{ color: "#0F172A" }}>
                         Diseñado para tu estilo de vida
@@ -230,10 +224,9 @@ const Lifestyle = () => {
                     </p>
                 </div>
 
-                {/* Carrusel wrapper — los botones flanquean el track */}
+
                 <div className="flex items-center justify-center gap-4">
 
-                    {/* Botón anterior */}
                     <button
                         onClick={prev}
                         disabled={current === 0}
@@ -244,7 +237,6 @@ const Lifestyle = () => {
                         <ChevronLeft />
                     </button>
 
-                    {/* Viewport con overflow hidden — ancho fijo para mostrar hint */}
                     <div
                         className="overflow-hidden"
                         style={{ maxWidth: VIEWPORT }}
@@ -262,7 +254,6 @@ const Lifestyle = () => {
                         </div>
                     </div>
 
-                    {/* Botón siguiente */}
                     <button
                         onClick={next}
                         disabled={current === maxIndex}
