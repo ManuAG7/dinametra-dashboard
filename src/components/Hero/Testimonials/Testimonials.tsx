@@ -1,4 +1,4 @@
-import { useRef, useState } from "react";
+import { useRef, useState, useEffect } from "react";
 import { motion, useInView, type Variants } from "framer-motion";
 import imagen1 from "../../../assets/testimonio1.png";
 import imagen2 from "../../../assets/testimonio2.png";
@@ -44,9 +44,7 @@ const StarIcon = ({ filled }: { filled: boolean }) => (
   <svg width="16" height="16" viewBox="0 0 24 24" fill="none">
     <path
       d="M12 2l3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14 2 9.27l6.91-1.01L12 2z"
-      stroke="#FACC15"
-      strokeWidth="1.5"
-      strokeLinejoin="round"
+      stroke="#FACC15" strokeWidth="1.5" strokeLinejoin="round"
       fill={filled ? "#FACC15" : "none"}
     />
   </svg>
@@ -74,30 +72,28 @@ const cardVariants: Variants = {
   visible: { opacity: 1, y: 0, transition: { duration: 0.55, ease: [0.22, 1, 0.36, 1] } },
 };
 
-const TestimonialCard = ({ item }: { item: Testimonial }) => {
+const TestimonialCard = ({ item, cardWidth }: { item: Testimonial; cardWidth: number }) => {
   const [playHover, setPlayHover] = useState(false);
 
   return (
     <motion.div
       variants={cardVariants}
-      className="flex flex-col gap-3 flex-shrink-0 "
-      style={{ width: 320 }}
+      className="flex flex-col gap-3 flex-shrink-0"
+      style={{ width: cardWidth }}
     >
       <div
-        className="relative overflow-hidden"
-        style={{ width: 320, height: 250, backgroundColor: item.imageFallback }}
+        className="relative overflow-hidden rounded-xl"
+        style={{ width: cardWidth, height: Math.round(cardWidth * 0.78), backgroundColor: item.imageFallback }}
       >
         {item.image && (
           <img src={item.image} alt={item.author} className="w-full h-full object-cover" />
         )}
-
         <motion.div
           className="absolute inset-0"
           initial={{ backgroundColor: "rgba(0,0,0,0)" }}
           whileHover={{ backgroundColor: "rgba(0,0,0,0.15)" }}
           transition={{ duration: 0.25 }}
         />
-
         <button
           className="absolute inset-0 flex items-center justify-center outline-none focus:outline-none focus:ring-0"
           style={{ background: "none", border: "none", cursor: "pointer" }}
@@ -107,23 +103,12 @@ const TestimonialCard = ({ item }: { item: Testimonial }) => {
         >
           <motion.div
             className="flex items-center justify-center rounded-full"
-            style={{
-              width: 56,
-              height: 56,
-              backgroundColor: "rgba(255,255,255,0.85)",
-              backdropFilter: "blur(4px)",
-            }}
+            style={{ width: 56, height: 56, backgroundColor: "rgba(255,255,255,0.85)", backdropFilter: "blur(4px)" }}
             animate={{ scale: playHover ? 1.15 : 1 }}
             transition={{ duration: 0.2 }}
           >
             <svg width="18" height="20" viewBox="0 0 18 20" fill="none">
-              <path
-                d="M1 1.5L17 10L1 18.5V1.5Z"
-                fill="#0F172A"
-                stroke="#0F172A"
-                strokeWidth="1.5"
-                strokeLinejoin="round"
-              />
+              <path d="M1 1.5L17 10L1 18.5V1.5Z" fill="#0F172A" stroke="#0F172A" strokeWidth="1.5" strokeLinejoin="round" />
             </svg>
           </motion.div>
         </button>
@@ -134,26 +119,48 @@ const TestimonialCard = ({ item }: { item: Testimonial }) => {
           <StarIcon key={i} filled={i <= item.rating} />
         ))}
       </div>
-
-      <p className="text-2sm text-gray-700 m-0 leading-relaxed font-bold">{item.quote}</p>
+      <p className="text-sm text-gray-700 m-0 leading-relaxed font-bold">{item.quote}</p>
       <span className="text-sm text-gray-400">{item.author}</span>
     </motion.div>
   );
 };
+
 const Testimonials = () => {
   const [current, setCurrent] = useState(0);
   const ref = useRef<HTMLDivElement>(null);
-  const inView = useInView(ref, { once: true, margin: "-100px" });
+  const containerRef = useRef<HTMLDivElement>(null);
+  const [containerWidth, setContainerWidth] = useState(0);
+  const inView = useInView(ref, { once: true, margin: "0px" });
 
-  const CARD_WIDTH = 320;
+  // Medir ancho disponible entre botones
+  useEffect(() => {
+    const measure = () => {
+      if (containerRef.current) setContainerWidth(containerRef.current.offsetWidth);
+    };
+    measure();
+    window.addEventListener("resize", measure);
+    return () => window.removeEventListener("resize", measure);
+  }, []);
+
   const GAP = 24;
+  const isMobile = containerWidth < 500;
+  const isTablet = containerWidth >= 500 && containerWidth < 900;
+
+  // móvil: 1 card, tablet: 2, desktop: 3
+  const visibleCards = isMobile ? 1 : isTablet ? 2 : 3;
+  const CARD_WIDTH = containerWidth > 0
+    ? Math.floor((containerWidth - GAP * (visibleCards - 1)) / visibleCards)
+    : 320;
+
   const STEP = CARD_WIDTH + GAP;
-  const VISIBLE = 3;
-  const VIEWPORT = CARD_WIDTH * VISIBLE + GAP * (VISIBLE - 1);
-  const maxIndex = TESTIMONIALS.length - VISIBLE;
+  const maxIndex = Math.max(0, TESTIMONIALS.length - visibleCards);
 
   const prev = () => setCurrent((c) => Math.max(c - 1, 0));
   const next = () => setCurrent((c) => Math.min(c + 1, maxIndex));
+
+  useEffect(() => {
+    setCurrent((c) => Math.min(c, maxIndex));
+  }, [maxIndex]);
 
   const navBtnStyle: React.CSSProperties = {
     width: 44,
@@ -170,10 +177,12 @@ const Testimonials = () => {
   };
 
   return (
-    <section className="w-full  overflow-hidden" style={{ backgroundColor: "#fff" }}>
+    <section className="w-full py-16 overflow-hidden" style={{ backgroundColor: "#fff" }}>
       <div ref={ref} className="max-w-[1400px] mx-auto px-6 sm:px-10 lg:px-16">
 
+        {/* Carrusel */}
         <div className="flex items-center justify-center gap-4">
+
           <button
             onClick={prev}
             disabled={current === 0}
@@ -183,7 +192,9 @@ const Testimonials = () => {
           >
             <ChevronLeft />
           </button>
-          <div className="overflow-hidden" style={{ width: VIEWPORT }}>
+
+          {/* Viewport dinámico */}
+          <div ref={containerRef} className="overflow-hidden flex-1">
             <motion.div
               className="flex"
               style={{ gap: GAP }}
@@ -198,11 +209,12 @@ const Testimonials = () => {
                 transition={{ duration: 0.5, ease: [0.22, 1, 0.36, 1] }}
               >
                 {TESTIMONIALS.map((item) => (
-                  <TestimonialCard key={item.id} item={item} />
+                  <TestimonialCard key={item.id} item={item} cardWidth={CARD_WIDTH || 320} />
                 ))}
               </motion.div>
             </motion.div>
           </div>
+
           <button
             onClick={next}
             disabled={current === maxIndex}
@@ -212,8 +224,9 @@ const Testimonials = () => {
           >
             <ChevronRight />
           </button>
-
         </div>
+
+        {/* Dots */}
         <div className="flex justify-center gap-2 mt-8">
           {TESTIMONIALS.map((_, i) => (
             <button

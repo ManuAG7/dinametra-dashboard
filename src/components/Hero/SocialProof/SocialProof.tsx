@@ -2,11 +2,10 @@ import { useRef } from "react";
 import { motion, useInView, type Variants } from "framer-motion";
 import imagen4 from "../../../assets/gel.png";
 
-
 const BARS = [
   { stars: 5, pct: 86 },
   { stars: 4, pct: 10 },
-  { stars: 3, pct: 2  },
+  { stars: 3, pct: 2 },
 ];
 
 const StarIcon = ({ filled }: { filled: boolean }) => (
@@ -23,12 +22,20 @@ const StarIcon = ({ filled }: { filled: boolean }) => (
 
 const fadeUp: Variants = {
   hidden: { opacity: 0, y: 28 },
-  visible: { opacity: 1, y: 0, transition: { duration: 0.65, ease: [0.22, 1, 0.36, 1] } },
+  visible: {
+    opacity: 1,
+    y: 0,
+    transition: { duration: 0.65, ease: [0.22, 1, 0.36, 1] },
+  },
 };
 
 const fadeRight: Variants = {
   hidden: { opacity: 0, x: 40 },
-  visible: { opacity: 1, x: 0, transition: { duration: 0.7, ease: [0.22, 1, 0.36, 1], delay: 0.15 } },
+  visible: {
+    opacity: 1,
+    x: 0,
+    transition: { duration: 0.7, ease: [0.22, 1, 0.36, 1], delay: 0.15 },
+  },
 };
 
 const barVariant: Variants = {
@@ -75,8 +82,8 @@ const SocialProof = () => {
             className="text-sm text-gray-500 m-0 leading-relaxed"
             style={{ maxWidth: 518 }}
           >
-            Únete a más de 50 000 clientes satisfechos que han logrado
-            una piel más firme y radiante con nuestras fórmulas botánicas.
+            Únete a más de 50 000 clientes satisfechos que han logrado una piel
+            más firme y radiante con nuestras fórmulas botánicas.
           </p>
 
           <div
@@ -84,14 +91,18 @@ const SocialProof = () => {
             style={{ maxWidth: 500 }}
           >
             <div className="flex flex-col gap-1 flex-shrink-0">
-              <span className="text-4xl font-extrabold text-gray-900 leading-none">4.9</span>
+              <span className="text-4xl font-extrabold text-gray-900 leading-none">
+                4.9
+              </span>
               <div className="flex gap-0.5">
-                {[1,2,3,4,5].map((i) => (
+                {[1, 2, 3, 4, 5].map((i) => (
                   <StarIcon key={i} filled={i === 1} />
                 ))}
               </div>
               <span className="text-xs text-gray-400 leading-tight">
-                2,450 Reseñas<br />verificadas
+                2,450 Reseñas
+                <br />
+                verificadas
               </span>
             </div>
             <div className="flex flex-col gap-2 flex-1 pt-1">
@@ -111,15 +122,17 @@ const SocialProof = () => {
                       animate={inView ? "visible" : "hidden"}
                     />
                   </div>
-                  <span className="text-xs text-gray-400 w-7 text-right">{pct}%</span>
+                  <span className="text-xs text-gray-400 w-7 text-right">
+                    {pct}%
+                  </span>
                 </div>
               ))}
             </div>
           </div>
         </motion.div>
         <motion.div
-          className="relative flex-shrink-0 overflow-hidden rounded-2xl"
-          style={{ width: 544, height: 496 }}
+          className="relative w-full lg:w-[544px] overflow-hidden rounded-2xl"
+          style={{ height: "clamp(300px, 50vw, 496px)" }}
           initial="hidden"
           animate={inView ? "visible" : "hidden"}
           variants={fadeRight}
@@ -128,7 +141,12 @@ const SocialProof = () => {
             className="absolute inset-0"
             style={{ backgroundColor: "#2a1f1a" }}
           >
-            <img src={imagen4} alt="Producto Torongia" className="w-full h-full object-cover" style={{ opacity: 0.5 }} /> 
+            <img
+              src={imagen4}
+              alt="Producto Torongia"
+              className="w-full h-full object-cover"
+              style={{ opacity: 0.5 }}
+            />
             <div className="w-full h-full flex items-center justify-center opacity-20">
               <svg width="64" height="64" viewBox="0 0 48 48" fill="none">
                 <rect width="48" height="48" rx="8" fill="#888" />
@@ -141,7 +159,8 @@ const SocialProof = () => {
           <div
             className="absolute inset-0 pointer-events-none"
             style={{
-              background: "linear-gradient(to top, rgba(0,0,0,0.75) 0%, rgba(0,0,0,0.2) 45%, transparent 100%)",
+              background:
+                "linear-gradient(to top, rgba(0,0,0,0.75) 0%, rgba(0,0,0,0.2) 45%, transparent 100%)",
             }}
           />
 
@@ -151,22 +170,17 @@ const SocialProof = () => {
           >
             <p
               className="text-white font-medium leading-relaxed m-0"
-              style={{ fontSize: 20 }}
+              style={{ fontSize: "clamp(14px, 2vw, 20px)" }}
             >
-              "Me encanta que se absorbe al instante.
-              Me lo aplico terminando mi rutina, me visto
-              y listo. Siento mi piel mucho más firme.
-              ¡Cero sensación pegajosa!"
+              "Me encanta que se absorbe al instante. Me lo aplico terminando mi
+              rutina, me visto y listo. Siento mi piel mucho más firme. ¡Cero
+              sensación pegajosa!"
             </p>
-            <span
-              className="font-bold text-lg"
-              style={{ color: "#FF4D00" }}
-            >
+            <span className="font-bold text-lg" style={{ color: "#FF4D00" }}>
               -Carla R.
             </span>
           </div>
         </motion.div>
-
       </div>
     </section>
   );
